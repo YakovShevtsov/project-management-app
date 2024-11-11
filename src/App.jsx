@@ -6,13 +6,32 @@ import CreateProject from "./components/CreateProject";
 function App() {
   const [projectsList, setProjectsList] = useState({
     projects: [],
-    selectedProject: undefined,
+    selectedProjectId: undefined,
   });
+
+  function handleCreateProject(projectTitle, projectDescription, projectDate) {
+    setProjectsList((prevProjectList) => {
+      const projectId = Math.random();
+
+      return {
+        projects: [
+          ...prevProjectList.projects,
+          {
+            title: projectTitle,
+            description: projectDescription,
+            date: projectDate,
+            id: projectId,
+          },
+        ],
+        selectedProjectId: projectId,
+      };
+    });
+  }
 
   return (
     <main className="h-screen my-8 flex gap-8">
-      <Aside />
-      <CreateProject />
+      <Aside projectsList={projectsList} />
+      <CreateProject onAdd={handleCreateProject} />
       {/* <NoProjectSelected /> */}
     </main>
   );
