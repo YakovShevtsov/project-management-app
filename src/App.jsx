@@ -20,7 +20,12 @@ function App() {
       />
     );
   } else if (projectsList.selectedProjectId) {
-    content = <Project onGetSelectedProject={getSelectedProject} />;
+    content = (
+      <Project
+        onDelete={handleDeleteProject}
+        onGetSelectedProject={getSelectedProject}
+      />
+    );
   }
 
   function getSelectedProject() {
@@ -70,11 +75,24 @@ function App() {
     });
   }
 
-  function handleSelectProject(projectId) {
+  function handleSelectProject(selectingProjectId) {
     setProjectsList((prevProjectList) => {
       return {
         projects: [...prevProjectList.projects],
-        selectedProjectId: projectId,
+        selectedProjectId: selectingProjectId,
+      };
+    });
+  }
+
+  function handleDeleteProject(deletingProjectId) {
+    setProjectsList((prevProjectList) => {
+      const updatedProjectsList = prevProjectList.projects.filter(
+        (project) => project.id !== deletingProjectId
+      );
+
+      return {
+        projects: [...updatedProjectsList],
+        selectedProjectId: undefined,
       };
     });
   }
