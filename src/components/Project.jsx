@@ -70,7 +70,7 @@ export default function Project({
           Add task
         </button>
       </div>
-      <ul>
+      {selectedProject.tasks.length > 0 ? (
         <ul className="p-4 mt-8 rounded-md bg-stone-100">
           {selectedProject.tasks.map((task) => (
             <li
@@ -87,7 +87,11 @@ export default function Project({
             </li>
           ))}
         </ul>
-      </ul>
+      ) : (
+        <p className="text-stone-700">
+          This project doesn't have any tasks yet
+        </p>
+      )}
     </div>
   );
 }
