@@ -6,21 +6,31 @@ import Project from "./components/Project";
 
 function App() {
   const [projectsList, setProjectsList] = useState({
-    projects: [
-      {
-        title: "Learn React",
-        description: "This is description",
-        date: "2024-12-11",
-        id: Math.random(),
-      },
-    ],
+    projects: [],
     selectedProjectId: undefined,
   });
 
   let content = <NoProjectSelected onStartCreating={handleStartCreating} />;
 
   if (projectsList.selectedProjectId === null) {
-    content = <CreateProject onAdd={handleCreateProject} />;
+    content = (
+      <CreateProject
+        onStopCreating={handleStopCreating}
+        onAdd={handleCreateProject}
+      />
+    );
+  } else if (projectsList.selectedProjectId) {
+    content = <Project onGetSelectedProject={getSelectedProject} />;
+  }
+
+  function getSelectedProject() {
+    let selectedProject;
+    projectsList.projects.map((project) => {
+      if (project.id === projectsList.selectedProjectId) {
+        selectedProject = project;
+      }
+    });
+    return selectedProject;
   }
 
   function handleCreateProject(projectTitle, projectDescription, projectDate) {
@@ -51,11 +61,30 @@ function App() {
     });
   }
 
+  function handleStopCreating() {
+    setProjectsList((prevProjectList) => {
+      return {
+        projects: [...prevProjectList.projects],
+        selectedProjectId: undefined,
+      };
+    });
+  }
+
+  function handleSelectProject(projectId) {
+    setProjectsList((prevProjectList) => {
+      return {
+        projects: [...prevProjectList.projects],
+        selectedProjectId: projectId,
+      };
+    });
+  }
+
   return (
     <main className="h-screen my-8 flex gap-8">
       <Aside
         projectsList={projectsList}
         onStartCreating={handleStartCreating}
+        onSelect={handleSelectProject}
       />
       {content}
     </main>
