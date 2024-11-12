@@ -24,6 +24,7 @@ function App() {
       <Project
         onDelete={handleDeleteProject}
         onGetSelectedProject={getSelectedProject}
+        onAddTask={handleAddTaskToProject}
       />
     );
   }
@@ -50,6 +51,7 @@ function App() {
             description: projectDescription,
             date: projectDate,
             id: projectId,
+            tasks: [],
           },
         ],
         selectedProjectId: projectId,
@@ -93,6 +95,30 @@ function App() {
       return {
         projects: [...updatedProjectsList],
         selectedProjectId: undefined,
+      };
+    });
+  }
+
+  function handleAddTaskToProject(taskName) {
+    setProjectsList((prevProjectList) => {
+      const task = {
+        title: taskName,
+        projectId: Math.random(),
+      };
+
+      const updatedProjectsList = prevProjectList.projects.map((project) => {
+        if (project.id === prevProjectList.selectedProjectId) {
+          return {
+            ...project,
+            tasks: [...project.tasks, task],
+          };
+        }
+        return project;
+      });
+
+      return {
+        projects: updatedProjectsList,
+        selectedProjectId: prevProjectList.selectedProjectId,
       };
     });
   }

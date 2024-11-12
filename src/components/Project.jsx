@@ -1,7 +1,14 @@
 import Input from "./Input";
+import { useRef } from "react";
 
-export default function Project({ onGetSelectedProject, onDelete }) {
+export default function Project({ onGetSelectedProject, onDelete, onAddTask }) {
+  const input = useRef();
   const selectedProject = onGetSelectedProject();
+
+  function handleCreateTask() {
+    onAddTask(input.current.value);
+    input.current.value = "";
+  }
 
   return (
     <div className="w-[35rem] mt-16">
@@ -21,14 +28,34 @@ export default function Project({ onGetSelectedProject, onDelete }) {
         {selectedProject.description}
       </p>
       <hr />
-      <div></div>
       <h2 className="text-2xl font-bold text-stone-700">Tasks</h2>
       <div className="flex items-center gap-4">
-        <Input type="text" />
-        <button className="text-stone-600 hover:text-stone-950">
+        <Input
+          type="text"
+          ref={input}
+        />
+        <button
+          className="text-stone-600 hover:text-stone-950"
+          onClick={handleCreateTask}
+        >
           Add task
         </button>
       </div>
+      <ul>
+        <ul className="p-4 mt-8 rounded-md bg-stone-100">
+          {selectedProject.tasks.map((task) => (
+            <li
+              className="flex justify-between my-4"
+              key={task.selectedProjectId}
+            >
+              {task.title}
+              <button className="text-stone-700 hover:text-red-500">
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </ul>
     </div>
   );
 }

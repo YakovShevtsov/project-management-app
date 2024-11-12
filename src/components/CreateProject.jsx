@@ -23,9 +23,9 @@ export default function CreateProject({ onAdd, onStopCreating }) {
     }
 
     onAdd(projectTitle, projectDescription, projectDate);
-    projectTitle = "";
-    projectDescription = "";
-    projectDate = "";
+    title.current.value = "";
+    description.current.value = "";
+    date.current.value = "";
   }
 
   return (
