@@ -6,7 +6,14 @@ import Project from "./components/Project";
 
 function App() {
   const [projectsList, setProjectsList] = useState({
-    projects: [],
+    projects: [
+      {
+        title: "Learn React",
+        description: "This is description",
+        date: "2024-12-11",
+        id: Math.random(),
+      },
+    ],
     selectedProjectId: undefined,
   });
 
@@ -46,7 +53,10 @@ function App() {
 
   return (
     <main className="h-screen my-8 flex gap-8">
-      <Aside projectsList={projectsList} onStartCreating={handleStartCreating} />
+      <Aside
+        projectsList={projectsList}
+        onStartCreating={handleStartCreating}
+      />
       {content}
     </main>
   );
