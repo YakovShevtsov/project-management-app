@@ -36,7 +36,7 @@ export default function CreateProject({ onAdd, onStopCreating }) {
       >
         <h2 className="text-xl font-bold text-stone-700 my-4">Invalid input</h2>
         <p className="text-stone-400 mb-4">
-          Please make you're entered all the fields!
+          Please make sure there is no empty fields!
         </p>
       </Modal>
       <menu className="flex items-center justify-end gap-4 my-4">
