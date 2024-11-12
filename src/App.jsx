@@ -63,7 +63,7 @@ function App() {
   function handleStartCreating() {
     setProjectsList((prevProjectList) => {
       return {
-        projects: [...prevProjectList.projects],
+        ...prevProjectList,
         selectedProjectId: null,
       };
     });
@@ -72,7 +72,7 @@ function App() {
   function handleStopCreating() {
     setProjectsList((prevProjectList) => {
       return {
-        projects: [...prevProjectList.projects],
+        ...prevProjectList,
         selectedProjectId: undefined,
       };
     });
@@ -81,7 +81,7 @@ function App() {
   function handleSelectProject(selectingProjectId) {
     setProjectsList((prevProjectList) => {
       return {
-        projects: [...prevProjectList.projects],
+        ...prevProjectList,
         selectedProjectId: selectingProjectId,
       };
     });
@@ -94,7 +94,7 @@ function App() {
       );
 
       return {
-        projects: [...updatedProjectsList],
+        projects: updatedProjectsList,
         selectedProjectId: undefined,
       };
     });
