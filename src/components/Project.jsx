@@ -75,7 +75,7 @@ export default function Project({
           {selectedProject.tasks.map((task) => (
             <li
               className="flex justify-between my-4"
-              key={task.selectedProjectId}
+              key={task.id}
             >
               {task.title}
               <button

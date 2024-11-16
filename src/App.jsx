@@ -1,25 +1,121 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import Aside from "./components/Aside";
 import NoProjectSelected from "./components/NoProjectSelected";
 import CreateProject from "./components/CreateProject";
 import Project from "./components/Project";
 
+function projectsReducer(state, action) {
+  switch (action.type) {
+    case "CREATE_PROJECT": {
+      const projectId = Date.now() + Math.random();
+
+      return {
+        projects: [
+          ...state.projects,
+          {
+            title: action.payload.projectTitle,
+            description: action.payload.projectDescription,
+            date: action.payload.projectDate,
+            id: projectId,
+            tasks: [],
+          },
+        ],
+        selectedProjectId: projectId,
+      };
+    }
+
+    case "START_CREATING": {
+      return {
+        ...state,
+        selectedProjectId: null,
+      };
+    }
+
+    case "STOP_CREATING": {
+      return {
+        ...state,
+        selectedProjectId: undefined,
+      };
+    }
+
+    case "SELECT_PROJECT": {
+      return {
+        ...state,
+        selectedProjectId: action.payload,
+      };
+    }
+
+    case "DELETE_PROJECT": {
+      const updatedProjectsList = state.projects.filter(
+        (project) => project.id !== action.payload
+      );
+
+      return {
+        projects: updatedProjectsList,
+        selectedProjectId: undefined,
+      };
+    }
+
+    case "ADD_TASK_TO_PROJECT": {
+      const task = {
+        title: action.payload,
+        id: Date.now() + Math.random(),
+      };
+
+      const updatedProjectsList = state.projects.map((project) => {
+        if (project.id === state.selectedProjectId) {
+          return {
+            ...project,
+            tasks: [...project.tasks, task],
+          };
+        }
+        return project;
+      });
+
+      return {
+        projects: updatedProjectsList,
+        selectedProjectId: state.selectedProjectId,
+      };
+    }
+
+    case "DELETE_TASK_FROM_PROJECT": {
+      const updatedProjectsList = state.projects.map((project) => {
+        if (project.id === state.selectedProjectId) {
+          return {
+            ...project,
+            tasks: project.tasks.filter((task) => task.id !== action.payload),
+          };
+        }
+        return project;
+      });
+
+      return {
+        projects: updatedProjectsList,
+        selectedProjectId: state.selectedProjectId,
+      };
+    }
+
+    default:
+      return state;
+  }
+}
+
 function App() {
-  const [projectsList, setProjectsList] = useState({
+  const [projects, dispatchProjects] = useReducer(projectsReducer, {
     projects: [],
     selectedProjectId: undefined,
   });
 
   let content = <NoProjectSelected onStartCreating={handleStartCreating} />;
 
-  if (projectsList.selectedProjectId === null) {
+  if (projects.selectedProjectId === null) {
     content = (
       <CreateProject
         onStopCreating={handleStopCreating}
         onAdd={handleCreateProject}
       />
     );
-  } else if (projectsList.selectedProjectId) {
+  } else if (projects.selectedProjectId) {
     content = (
       <Project
         onDelete={handleDeleteProject}
@@ -31,122 +127,63 @@ function App() {
   }
 
   function getSelectedProject() {
-    let selectedProject;
-    projectsList.projects.map((project) => {
-      if (project.id === projectsList.selectedProjectId) {
-        selectedProject = project;
-      }
-    });
+    const selectedProject = projects.projects.find(
+      (project) => project.id === projects.selectedProjectId
+    );
     return selectedProject;
   }
 
   function handleCreateProject(projectTitle, projectDescription, projectDate) {
-    setProjectsList((prevProjectList) => {
-      const projectId = Math.random();
-
-      return {
-        projects: [
-          ...prevProjectList.projects,
-          {
-            title: projectTitle,
-            description: projectDescription,
-            date: projectDate,
-            id: projectId,
-            tasks: [],
-          },
-        ],
-        selectedProjectId: projectId,
-      };
+    dispatchProjects({
+      type: "CREATE_PROJECT",
+      payload: { projectTitle, projectDescription, projectDate },
     });
   }
 
   function handleStartCreating() {
-    setProjectsList((prevProjectList) => {
-      return {
-        ...prevProjectList,
-        selectedProjectId: null,
-      };
+    dispatchProjects({
+      type: "START_CREATING",
     });
   }
 
   function handleStopCreating() {
-    setProjectsList((prevProjectList) => {
-      return {
-        ...prevProjectList,
-        selectedProjectId: undefined,
-      };
+    dispatchProjects({
+      type: "STOP_CREATING",
     });
   }
 
   function handleSelectProject(selectingProjectId) {
-    setProjectsList((prevProjectList) => {
-      return {
-        ...prevProjectList,
-        selectedProjectId: selectingProjectId,
-      };
+    dispatchProjects({
+      type: "SELECT_PROJECT",
+      payload: selectingProjectId,
     });
   }
 
   function handleDeleteProject(deletingProjectId) {
-    setProjectsList((prevProjectList) => {
-      const updatedProjectsList = prevProjectList.projects.filter(
-        (project) => project.id !== deletingProjectId
-      );
-
-      return {
-        projects: updatedProjectsList,
-        selectedProjectId: undefined,
-      };
+    dispatchProjects({
+      type: "DELETE_PROJECT",
+      payload: deletingProjectId,
     });
   }
 
   function handleAddTaskToProject(taskName) {
-    setProjectsList((prevProjectList) => {
-      const task = {
-        title: taskName,
-        id: Math.random(),
-      };
-
-      const updatedProjectsList = prevProjectList.projects.map((project) => {
-        if (project.id === prevProjectList.selectedProjectId) {
-          return {
-            ...project,
-            tasks: [...project.tasks, task],
-          };
-        }
-        return project;
-      });
-
-      return {
-        projects: updatedProjectsList,
-        selectedProjectId: prevProjectList.selectedProjectId,
-      };
+    dispatchProjects({
+      type: "ADD_TASK_TO_PROJECT",
+      payload: taskName,
     });
   }
 
   function handleDeleteTaskFromProject(taskId) {
-    setProjectsList((prevProjectList) => {
-      const updatedProjectsList = prevProjectList.projects.map((project) => {
-        if (project.id === prevProjectList.selectedProjectId) {
-          return {
-            ...project,
-            tasks: project.tasks.filter((task) => task.id !== taskId),
-          };
-        }
-        return project;
-      });
-
-      return {
-        projects: updatedProjectsList,
-        selectedProjectId: prevProjectList.selectedProjectId,
-      };
+    dispatchProjects({
+      type: "DELETE_TASK_FROM_PROJECT",
+      payload: taskId,
     });
   }
 
   return (
     <main className="h-screen my-8 flex gap-8">
       <Aside
-        projectsList={projectsList}
+        projectsList={projects}
         onStartCreating={handleStartCreating}
         onSelect={handleSelectProject}
       />
